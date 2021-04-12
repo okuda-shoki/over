@@ -11,29 +11,74 @@
     </div>
   </div>
   <div class="tubuyaki">
-    <h2 class="tubuyaki-logo">つぶやき一覧</h2>
-    <div class="tubuyaki-text">
-      <ul class="tubuyaki-border">
-        <li v-for="(item,index) in list" :key="index" class="square">{{item.name}}</li>
-        <button @click="drop" class="submit-button button">削除する</button>
-      </ul>
+    <p class="tubuyaki-logo">つぶやき一覧</p>
+    <div class="tubuyaki-border">
+    <table v-for="(data,index) in list" :key="index" class="tubuyaki-square" >
+      <tr class="tubuyaki-word">
+      <td>{{data.name}}</td>
+      <button class="tubuyaki-button" @click="delb">{{data.button}}</button>
+      </tr>
+    </table>
     </div>
   </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data(){
     return{
       text:"",
       list:[
-          {name:"text1"},
-          {name:"text2"}
+          {name:"test7",button:"削除する"},
+          {name:"test6",button:"削除する"},
+          {name:"test5",button:"削除する"},
+          {name:"test4",button:"削除する"},
+          {name:"test3",button:"削除する"},
+          {name:"test2",button:"削除する"},
+          {name:"test1",button:"削除する"}
       ]
     }
-  }
-}
+  },methods:{
+    send(){
+      axios.post(
+        "http://127.0.0.1:8000/api/tweeetpost",{
+          text:this.text,
+        })
+        .then((response)=>{
+          console.log(response);
+          this.text="";
+          this.router.go({
+            path:this.$router.currentRoute.path,
+            force:true,
+          });
+        });
+        this.list.unshift({
+          name:this.text,button:"削除する"
+        });
+    },
+  created(){
+    this.send();
+  },
+  delb(){
+    axios.delete(
+       "http://127.0.0.1:8000/api/tweetdelete",{
+         text:this.text,
+       })
+       .then((response)=>{
+         console.log(response);
+         this.$router.go({
+           path:this.$router.current.path,
+           force:true,
+         });
+       });
+       this.list.shift({
+         name:this.text,button:"削除する"
+       })
+  },
+  },
+  };
 </script>
 
 
@@ -137,7 +182,7 @@ html {
   background-color: #ffffff;
 }
 * {
-  color: black;
+  color: #000;
   font-family: "Noto Sans JP";
 }
 
@@ -176,29 +221,39 @@ html {
   font-weight: bold;
 }
 
-.tubuyaki{
-  text-align: center;
-}
-
-
 .tubuyaki-logo{
-  color: #000;
-}
-
-.tubuyaki-text{
-  border: 1px solid #000;
-  width: 60%;
-  margin: 0 auto;
-  margin-top: 20px;
+  text-align: center;
+  margin: 50px;
+  font-weight: bold;
+  font-size: 23px;
 }
 
 .tubuyaki-border{
-  display: flex;
+  border: 1px solid #000;
+  width: 50%;
+  margin: 0 auto;
 }
-
-.square{
+.tubuyaki-square{
+  margin: 0 auto;
+  margin: 15px;
   display: inline-block;
   width: 100%;
-  text-align: left;
+}
+
+.tubuyaki-word{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+td::before{
+  content: "●";
+  color: RED; 
+  font-size: 50px;
+  vertical-align: middle;
+}
+
+.tubuyaki-button{
+  margin-right: 50px;
 }
 </style>
