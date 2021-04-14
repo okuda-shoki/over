@@ -28,7 +28,7 @@
 import axios from "axios";
 export default {
   async created(){
-    await this.$store.dispatch("data");
+    await this.$store.dispatch("login");
     console.log(this.$store.state.text.data);
   },
   data(){
@@ -44,29 +44,52 @@ export default {
           {name:"test1",button:"削除する"}
       ]
     }
-  },methods: {
+  },
+  methods: {
     async getContact() {
       const resData = await axios.get("http://127.0.0.1:8000/api/tweet/");
-      this.contactLists = resData.data.data;
+      this.list = resData.data.data;
     },
-    async send() {
+    send() {
       this.list.unshift({
         name:this.text,button:"削除する"
+      });
+      axios
+      .post("http://127.0.0.1:8000/api/tweet",{
+        text:this.text
       })
+      .then(response=>{
+        console.log(response);
+        this.$router.replace("/")
+      })
+      .catch(error=>{
+        alert(error);
+      })
+        },
+        async insertlist(){
       const sendData = {
         text: this.text,
       };
       await axios.post("http://127.0.0.1:8000/api/tweet/", sendData);
       await this.getContact();
-    },
-  
-    async delb(id) {
+  },
+    async delb() {
       this.list.shift({
         name:this.text,button:"削除する"
+      }),
+      axios
+      .delete("http://127.0.0.1:8000/api/tweet",{
+        text:this.text
       })
+      .then(response=>{
+        console.log(response);
+        this.$router.replace("/");
+      })
+    },
+    async deleteList(id){
       await axios.delete("http://127.0.0.1:8000/api/tweet/" + id);
       await this.getContact();
-    },
+      },
   },
 };
 </script>

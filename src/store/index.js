@@ -23,7 +23,7 @@ export default new Vuex.Store({
           text: text
         }
       );
-      commit("text", data.data.text);
+     text.commit("text", data.data.auth);
       router.replace("/");
     },
   },
