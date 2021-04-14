@@ -16,7 +16,7 @@
     <table v-for="(data,index) in list" :key="index" class="tubuyaki-square" >
       <tr class="tubuyaki-word">
       <td>{{data.name}}</td>
-      <button class="tubuyaki-button" @click="delb">{{data.button}}</button>
+      <button class="tubuyaki-button" @click="delb(data.id)">{{data.button}}</button>
       </tr>
     </table>
     </div>
@@ -27,6 +27,10 @@
 <script>
 import axios from "axios";
 export default {
+  async created(){
+    await this.$store.dispatch("data");
+    console.log(this.$store.state.text.data);
+  },
   data(){
     return{
       text:"",
@@ -40,47 +44,32 @@ export default {
           {name:"test1",button:"削除する"}
       ]
     }
-  },methods:{
-    send(){
-      axios.post(
-        "http://127.0.0.1:8000/api/tweeetpost",{
-          text:this.text,
-        })
-        .then((response)=>{
-          console.log(response);
-          this.text="";
-          this.router.go({
-            path:this.$router.currentRoute.path,
-            force:true,
-          });
-        });
-        this.list.unshift({
-          name:this.text,button:"削除する"
-        });
+  },methods: {
+    async getContact() {
+      const resData = await axios.get("http://127.0.0.1:8000/api/tweet/");
+      this.contactLists = resData.data.data;
     },
-  created(){
-    this.send();
+    async send() {
+      this.list.unshift({
+        name:this.text,button:"削除する"
+      })
+      const sendData = {
+        text: this.text,
+      };
+      await axios.post("http://127.0.0.1:8000/api/tweet/", sendData);
+      await this.getContact();
+    },
+  
+    async delb(id) {
+      this.list.shift({
+        name:this.text,button:"削除する"
+      })
+      await axios.delete("http://127.0.0.1:8000/api/tweet/" + id);
+      await this.getContact();
+    },
   },
-  delb(){
-    axios.delete(
-       "http://127.0.0.1:8000/api/tweetdelete",{
-         text:this.text,
-       })
-       .then((response)=>{
-         console.log(response);
-         this.$router.go({
-           path:this.$router.current.path,
-           force:true,
-         });
-       });
-       this.list.shift({
-         name:this.text,button:"削除する"
-       })
-  },
-  },
-  };
+};
 </script>
-
 
 <style>
 html, body, div, span, object, iframe,
@@ -185,7 +174,6 @@ html {
   color: #000;
   font-family: "Noto Sans JP";
 }
-
 
 .button{
   color: #000;
