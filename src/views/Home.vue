@@ -7,7 +7,7 @@
     <p class="main-text">つぶやく内容を入力してください</p>
     <div class="send-text">
       <input type="text" v-model="text" class="sendtext">
-      <button @click="send" class="submit-button button">つぶやく</button>
+      <button @click="send(id,name,button)" class="submit-button button">つぶやく</button>
     </div>
   </div>
   <div class="tubuyaki">
@@ -51,13 +51,23 @@ export default {
       this.list=resData.data.data;
     },
     async send(){
+      this.list.unshift({
+        name:this.text,button:"削除する"
+      })
       const sendData={
         name:this.text,
+        button:"削除する"
       };
+      this.text="";
+      this.router.go({
+        path:this.$router.currentRoute.path,
+        force:true,
+      })
       await axios.post( "http://127.0.0.1:8000/api/tweet",sendData);
       await this.getContact();
     },
     async delb(id) {
+      this.list.shift({name:this.text,button:"削除する"})
       await axios.delete("http://127.0.0.1:8000/api/tweet/" + id);
       await this.getContact();
     },
