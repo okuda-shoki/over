@@ -9,21 +9,21 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   plugins: [createPersistedState()],
   state: {
-    text: "",
+    name: "",
   },
   mutations: {
     store(state, payload) {
-      state.text = payload;
+      state.name = payload;
     }
   },
   actions: {
-    async storeData({text}) {
-      let data = await axios.get(
+    async login({name}) {
+      const storeData = await axios.get(
         "http://127.0.0.1:8000/api/tweet", {
         name: this.text
       },
       )
-      text.commit("store", data.data.data);
+      name.commit("name", storeData.data.data);
       router.replace("/")
     }
   },

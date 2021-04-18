@@ -7,7 +7,7 @@
     <p class="main-text">つぶやく内容を入力してください</p>
     <div class="send-text">
       <input type="text" v-model="text" class="sendtext">
-      <button @click="send(id,name,button)" class="submit-button button">つぶやく</button>
+      <button @click="send()" class="submit-button button">つぶやく</button>
     </div>
   </div>
   <div class="tubuyaki">
@@ -27,21 +27,16 @@
 <script>
 import axios from "axios";
 export default {
-  async created(){
-    await this.$store.dispatch("login");
-    console.log(this.$store.state.text.data);
+   created(){
+    this.getContact()
   },
   data(){
     return{
       text:"",
+      id:"",
+      name:"",
+      button:"",
       list:[
-          {name:"test7",button:"削除する"},
-          {name:"test6",button:"削除する"},
-          {name:"test5",button:"削除する"},
-          {name:"test4",button:"削除する"},
-          {name:"test3",button:"削除する"},
-          {name:"test2",button:"削除する"},
-          {name:"test1",button:"削除する"}
       ]
     }
   },
@@ -51,23 +46,13 @@ export default {
       this.list=resData.data.data;
     },
     async send(){
-      this.list.unshift({
-        name:this.text,button:"削除する"
-      })
       const sendData={
         name:this.text,
-        button:"削除する"
       };
-      this.text="";
-      this.router.go({
-        path:this.$router.currentRoute.path,
-        force:true,
-      })
-      await axios.post( "http://127.0.0.1:8000/api/tweet",sendData);
-      await this.getContact();
+    await axios.post("http://127.0.0.1:8000/api/tweet",sendData);
+    await this.getContact();
     },
     async delb(id) {
-      this.list.shift({name:this.text,button:"削除する"})
       await axios.delete("http://127.0.0.1:8000/api/tweet/" + id);
       await this.getContact();
     },
