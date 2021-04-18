@@ -16,7 +16,7 @@
     <table v-for="(data,index) in list" :key="index" class="tubuyaki-square" >
       <tr class="tubuyaki-word">
       <td>{{data.name}}</td>
-      <button class="tubuyaki-button" @click="delb(data.id)">{{data.button}}</button>
+      <button class="tubuyaki-button" @click="delb(data.id)">削除する</button>
       </tr>
     </table>
     </div>
@@ -33,9 +33,6 @@ export default {
   data(){
     return{
       text:"",
-      id:"",
-      name:"",
-      button:"",
       list:[
       ]
     }
